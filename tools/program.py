@@ -29,6 +29,7 @@ import cv2
 import numpy as np
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
+from ppocr.utils.checkpointer import Checkpointer
 from ppocr.utils.stats import TrainingStats
 from ppocr.utils.save_load import save_model
 from ppocr.utils.utility import print_dict, AverageMeter
@@ -36,6 +37,9 @@ from ppocr.utils.logging import get_logger
 from ppocr.utils.loggers import VDLLogger, WandbLogger, Loggers
 from ppocr.utils import profiler
 from ppocr.data import build_dataloader
+
+
+_checkpointer = None
 
 
 class ArgsParser(ArgumentParser):
@@ -186,11 +190,14 @@ def train(config,
           pre_best_model_dict,
           logger,
           log_writer=None,
+          checkpointer=None,
           scaler=None,
           amp_level='O2',
           amp_custom_black_list=[],
           amp_custom_white_list=[],
           amp_dtype='float16'):
+    global _checkpointer
+    checkpointer = checkpointer or _checkpointer
     cal_metric_during_train = config['Global'].get('cal_metric_during_train',
                                                    False)
     calc_epoch_interval = config['Global'].get('calc_epoch_interval', 1)
@@ -414,10 +421,9 @@ def train(config,
                         main_indicator]:
                     best_model_dict.update(cur_metric)
                     best_model_dict['best_epoch'] = epoch
-                    save_model(
+                    checkpointer.save_checkpoint(
                         model,
                         optimizer,
-                        save_model_dir,
                         logger,
                         config,
                         is_best=True,
@@ -446,10 +452,9 @@ def train(config,
 
             reader_start = time.time()
         if dist.get_rank() == 0:
-            save_model(
+            checkpointer.save_checkpoint(
                 model,
                 optimizer,
-                save_model_dir,
                 logger,
                 config,
                 is_best=False,
@@ -462,14 +467,12 @@ def train(config,
                 log_writer.log_model(is_best=False, prefix="latest")
 
         if dist.get_rank() == 0 and epoch > 0 and epoch % save_epoch_step == 0:
-            save_model(
+            checkpointer.save_checkpoint(
                 model,
                 optimizer,
-                save_model_dir,
                 logger,
                 config,
                 is_best=False,
-                prefix='iter_epoch_{}'.format(epoch),
                 best_model_dict=best_model_dict,
                 epoch=epoch,
                 global_step=global_step)
@@ -632,6 +635,7 @@ def get_center(model, eval_dataloader, post_process_class):
 
 
 def preprocess(is_train=False):
+    global _checkpointer
     FLAGS = ArgsParser().parse_args()
     profiler_options = FLAGS.profiler_options
     config = load_config(FLAGS.config)
@@ -650,6 +654,11 @@ def preprocess(is_train=False):
     else:
         log_file = None
     logger = get_logger(log_file=log_file)
+    
+    # init checkpointer
+    ckpt_config = config.get('Checkpointer', {})
+    ckpt_config["checkpoint_dir"] = save_model_dir
+    _checkpointer = Checkpointer(**ckpt_config)
 
     # check if set use_gpu=True in paddlepaddle cpu version
     use_gpu = config['Global'].get('use_gpu', False)
