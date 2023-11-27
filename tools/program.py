@@ -386,9 +386,13 @@ def train(config,
                 train_reader_cost = 0.0
                 train_batch_cost = 0.0
             # eval
-            if global_step > start_eval_step and \
-                    (global_step - start_eval_step) % eval_batch_step == 0 \
-                    and dist.get_rank() == 0:
+            if dist.get_rank() == 0 and (
+                (
+                    global_step > start_eval_step
+                    and (global_step - start_eval_step) % eval_batch_step == 0
+                )
+                or (epoch == epoch_num and (idx >= len(train_dataloader) - 1))
+            ):
                 if model_average:
                     Model_Average = paddle.incubate.optimizer.ModelAverage(
                         0.15,
