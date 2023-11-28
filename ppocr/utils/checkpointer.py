@@ -87,6 +87,7 @@ class Checkpointer:
         if not self._is_primary or self._checkpoint_dir is None:
             return
 
+        kwargs.update({"epoch": epoch})
         checkpoint_name = prefix or f"epoch_{epoch}"
         model_path = os.path.join(self._checkpoint_dir, checkpoint_name)
 

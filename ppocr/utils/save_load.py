@@ -71,8 +71,8 @@ def load_model(config, model, optimizer=None, model_type='det'):
                     states_dict = pickle.load(f) if six.PY2 else pickle.load(
                         f, encoding='latin1')
                 best_model_dict = states_dict.get('best_model_dict', {})
-                if 'epoch' in states_dict:
-                    best_model_dict['start_epoch'] = states_dict['epoch'] + 1
+                best_model_dict.update(states_dict)
+                best_model_dict['start_epoch'] = states_dict.get('epoch', 0) + 1
             logger.info("resume from {}".format(checkpoints))
 
             if optimizer is not None:
@@ -132,9 +132,9 @@ def load_model(config, model, optimizer=None, model_type='det'):
             with open(checkpoints + '.states', 'rb') as f:
                 states_dict = pickle.load(f) if six.PY2 else pickle.load(
                     f, encoding='latin1')
-            best_model_dict = states_dict.get('best_model_dict', {})
-            if 'epoch' in states_dict:
-                best_model_dict['start_epoch'] = states_dict['epoch'] + 1
+            best_model_dict = states_dict.pop('best_model_dict', {})
+            best_model_dict.update(states_dict)
+            best_model_dict['start_epoch'] = states_dict.get('epoch', 0) + 1
         logger.info("resume from {}".format(checkpoints))
     elif pretrained_model:
         is_float16 = load_pretrained_params(model, pretrained_model)
