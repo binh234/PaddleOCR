@@ -190,12 +190,12 @@ def train(config,
           pre_best_model_dict,
           logger,
           log_writer=None,
-          checkpointer=None,
           scaler=None,
           amp_level='O2',
           amp_custom_black_list=[],
           amp_custom_white_list=[],
-          amp_dtype='float16'):
+          amp_dtype='float16',
+          checkpointer=None):
     global _checkpointer
     checkpointer = checkpointer or _checkpointer
     cal_metric_during_train = config['Global'].get('cal_metric_during_train',
