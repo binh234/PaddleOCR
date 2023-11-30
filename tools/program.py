@@ -499,20 +499,21 @@ def eval(model,
          amp_level='O2',
          amp_custom_black_list=[],
          amp_custom_white_list=[],
-         amp_dtype='float16'):
+         amp_dtype='float16',
+         disable=False):
     model.eval()
     with paddle.no_grad():
         total_frame = 0.0
         total_time = 0.0
         pbar = tqdm(
+            enumerate(valid_dataloader),
             total=len(valid_dataloader),
             desc='eval model:',
-            position=0,
-            leave=True)
+            disable=disable)
         max_iter = len(valid_dataloader) - 1 if platform.system(
         ) == "Windows" else len(valid_dataloader)
         sum_images = 0
-        for idx, batch in enumerate(valid_dataloader):
+        for idx, batch in pbar:
             if idx >= max_iter:
                 break
             images = batch[0]
@@ -574,7 +575,6 @@ def eval(model,
                 post_result = post_process_class(preds, batch_numpy[1])
                 eval_class(post_result, batch_numpy)
 
-            pbar.update(1)
             total_frame += len(images)
             sum_images += 1
         # Get final metric，eg. acc or hmean
