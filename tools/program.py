@@ -712,7 +712,8 @@ def preprocess(is_train=False):
         loggers.append(log_writer)
     else:
         log_writer = None
-    print_dict(config, logger)
+    if is_train or config['Global'].get('print_config', True):
+        print_dict(config, logger)
 
     if loggers:
         log_writer = Loggers(loggers)
