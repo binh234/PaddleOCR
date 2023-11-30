@@ -658,7 +658,7 @@ def preprocess(is_train=False):
     
     # init checkpointer
     ckpt_config = config.get('Checkpointer', {})
-    ckpt_config["checkpoint_dir"] = save_model_dir
+    ckpt_config["checkpoint_dir"] = config['Global']['save_model_dir']
     _checkpointer = Checkpointer(**ckpt_config)
 
     # check if set use_gpu=True in paddlepaddle cpu version
