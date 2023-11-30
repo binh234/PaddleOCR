@@ -206,6 +206,7 @@ def train(config,
     print_batch_step = config['Global']['print_batch_step']
     eval_batch_step = config['Global']['eval_batch_step']
     profiler_options = config['profiler_options']
+    disable_pbar = config['Global'].get('disable_pbar', False)
 
     global_step = 0
     if 'global_step' in pre_best_model_dict:
@@ -411,7 +412,8 @@ def train(config,
                     amp_level=amp_level,
                     amp_custom_black_list=amp_custom_black_list,
                     amp_custom_white_list=amp_custom_white_list,
-                    amp_dtype=amp_dtype)
+                    amp_dtype=amp_dtype,
+                    disable=disable_pbar)
                 cur_metric_str = 'cur metric, {}'.format(', '.join(
                     ['{}: {}'.format(k, v) for k, v in cur_metric.items()]))
                 logger.info(cur_metric_str)
