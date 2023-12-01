@@ -696,13 +696,12 @@ def preprocess(is_train=False):
 
     loggers = []
 
-    if 'use_visualdl' in config['Global'] and config['Global']['use_visualdl']:
+    if dist.get_rank() == 0 and config['Global'].get('use_visualdl', False):
         save_model_dir = config['Global']['save_model_dir']
         vdl_writer_path = save_model_dir
         log_writer = VDLLogger(vdl_writer_path)
         loggers.append(log_writer)
-    if ('use_wandb' in config['Global'] and
-            config['Global']['use_wandb']) or 'wandb' in config:
+    if dist.get_rank() == 0 and (config['Global'].get('use_wandb', False) or 'wandb' in config):
         save_dir = config['Global']['save_model_dir']
         wandb_writer_path = "{}/wandb".format(save_dir)
         if "wandb" in config:
