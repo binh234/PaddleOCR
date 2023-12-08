@@ -195,9 +195,6 @@ def main(config, device, logger, vdl_writer):
         step_each_epoch=len(train_dataloader),
         model=model)
 
-    # resume PACT training process
-    pre_best_model_dict = load_model(config, model, optimizer, config['Architecture']["model_type"])
-
     # build metric
     eval_class = build_metric(config['Metric'])
 
