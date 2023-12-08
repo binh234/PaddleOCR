@@ -158,10 +158,13 @@ def load_pretrained_params(model, path):
 
     new_state_dict = {}
     is_float16 = False
+    
+    print(state_dict.keys())
+    print(params.keys())
 
     for k1 in params.keys():
 
-        if k1 not in state_dict.keys():
+        if k1 not in state_dict:
             logger.warning("The pretrained params {} not in model".format(k1))
         else:
             if params[k1].dtype == paddle.float16:

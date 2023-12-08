@@ -142,7 +142,7 @@ def main(config, device, logger, vdl_writer):
                 'name'] == 'MultiHead':  # for multi head
             if config['PostProcess']['name'] == 'SARLabelDecode':
                 char_num = char_num - 2
-            if config['PostProcess']['name'] == 'NRTRLabelDecode':
+            elif config['PostProcess']['name'] == 'NRTRLabelDecode':
                 char_num = char_num - 3
             out_channels_list = {}
             out_channels_list['CTCLabelDecode'] = char_num
