@@ -159,9 +159,6 @@ def load_pretrained_params(model, path):
     new_state_dict = {}
     is_float16 = False
     
-    print(state_dict.keys())
-    print(params.keys())
-
     for k1 in params.keys():
 
         if k1 not in state_dict:
