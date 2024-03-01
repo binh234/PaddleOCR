@@ -45,9 +45,12 @@ class Checkpointer:
         checkpoints = set()
         pattern = "epoch*.pdparams"
         for model_state_file in glob.iglob(os.path.join(self._checkpoint_dir, pattern)):
-            checkpoint_name = model_state_file.rsplit(".")[0]
-            epoch = checkpoint_name.rsplit("_", 1)[-1]
-            checkpoints.add((int(epoch), checkpoint_name))
+            try:
+                checkpoint_name = model_state_file.rsplit(".")[0]
+                epoch = checkpoint_name.rsplit("_", 1)[-1]
+                checkpoints.add((int(epoch), checkpoint_name))
+            except Exception as e:
+                print(f"An error happen while retrieving last checkpoints: {e}")
         return checkpoints
 
     def _remove_checkpoint(self, checkpoint_name: str):
