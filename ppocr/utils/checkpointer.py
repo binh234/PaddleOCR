@@ -46,7 +46,7 @@ class Checkpointer:
         pattern = "epoch*.pdparams"
         for model_state_file in glob.iglob(os.path.join(self._checkpoint_dir, pattern)):
             try:
-                checkpoint_name = model_state_file.rsplit(".")[0]
+                checkpoint_name = model_state_file.rsplit(".", 1)[0]
                 epoch = checkpoint_name.rsplit("_", 1)[-1]
                 checkpoints.add((int(epoch), checkpoint_name))
             except Exception as e:
