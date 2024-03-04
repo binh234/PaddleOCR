@@ -28,14 +28,13 @@ class CusAug(object):
                 A.Defocus(radius=(1, 2), p=0.15),
                 A.GaussianBlur(blur_limit=(3, 5), p=0.1),
                 A.ImageCompression(quality_lower=5, quality_upper=100, p=0.2),
-                A.JpegCompression(quality_lower=5, quality_upper=100, p=0.2),
                 A.RandomFog(fog_coef_lower=0.05, fog_coef_upper=0.15, p=0.1),
                 A.RingingOvershoot(blur_limit=(7, 15), p=0.1),
                 A.Emboss(alpha=(0.2, 0.5), strength=(0.2, 0.7), always_apply=False, p=0.1),
                 A.RGBShift(
                     r_shift_limit=50, g_shift_limit=50, b_shift_limit=50, always_apply=False, p=0.2
                 ),
-                A.RandomBrightness(limit=0.2, always_apply=False, p=0.1),
+                A.RandomBrightnessContrast(brightness_limit=0.2, contrast_limit=0.2, always_apply=False, p=0.1),
                 A.ElasticTransform(
                     alpha=1,
                     sigma=10,
