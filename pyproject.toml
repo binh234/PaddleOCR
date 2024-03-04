@@ -1,0 +1,87 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "paddleocr"
+version = "2.7.0.3"
+description = "Awesome OCR toolkits based on PaddlePaddle (8.6M ultra-lightweight pre-trained model, support training and deployment among server, mobile, embeded and IoT devices)"
+readme = "README.md"
+license = { file = "LICENSE" }
+
+classifiers = [
+    'Intended Audience :: Developers',
+    'Operating System :: OS Independent',
+    'Natural Language :: Chinese (Simplified)',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.2',
+    'Programming Language :: Python :: 3.3',
+    'Programming Language :: Python :: 3.4',
+    'Programming Language :: Python :: 3.5',
+    'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7',
+    'Topic :: Utilities',
+]
+keywords = [
+    'ocr',
+    'textdetection',
+    'textrecognition',
+    'paddleocr',
+    'crnn',
+    'east',
+    'star-net',
+    'rosetta',
+    'ocrlite',
+    'db',
+    'chineseocr',
+    'chinesetextdetection',
+    'chinesetextrecognition',
+]
+requires-python = ">=3.6"
+
+dependencies = [
+    "shapely",
+    "scikit-image",
+    "imgaug",
+    "pyclipper",
+    "lmdb",
+    "tqdm",
+    "numpy",
+    "visualdl",
+    "rapidfuzz",
+    "opencv-python",
+    "opencv-contrib-python",
+    "cython",
+    "lxml",
+    "premailer",
+    "openpyxl",
+    "attrdict",
+    "PyMuPDF<1.21.0",
+    "Pillow>=10.0.0",
+    "pyyaml",
+    "albumentations",
+]
+
+[project.urls]
+Homepage = "https://github.com/binh234/paddleocr"
+
+[project.scripts]
+paddleocr = "paddleocr.paddleocr:main"
+
+[tool.setuptools]
+packages = ["paddleocr"]
+
+[tool.black]
+line-length = 120
+include = '\.pyi?$'
+extend-exclude = ".vscode/.*"
+
+[tool.isort]
+profile = "black"
+extend_skip = [".vscode"]
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+line_length = 120
