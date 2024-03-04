@@ -69,7 +69,7 @@ Homepage = "https://github.com/binh234/paddleocr"
 paddleocr = "paddleocr.paddleocr:main"
 
 [tool.setuptools]
-packages = ["paddleocr"]
+packages = ["ppocr"]
 
 [tool.black]
 line-length = 120
