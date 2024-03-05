@@ -1,9 +1,11 @@
+import random
+
+import albumentations as A
 import cv2
 import numpy as np
-import random
-from .text_image_aug import tia_perspective, tia_stretch, tia_distort
+
 from .rec_img_aug import BaseDataAugmentation
-import albumentations as A
+from .text_image_aug import tia_distort, tia_perspective, tia_stretch
 
 
 class CusAug(object):
@@ -16,7 +18,7 @@ class CusAug(object):
         jitter_prob=0.4,
         blur_prob=0.4,
         hsv_aug_prob=0.4,
-        **kwargs
+        **kwargs,
     ):
         self.tia_prob = tia_prob
         self.bda = BaseDataAugmentation(
@@ -24,17 +26,24 @@ class CusAug(object):
         )
         self.transform = A.Compose(
             [
-                A.Blur(blur_limit=(3, 7), p=0.15),
+                A.OneOf(
+                    [
+                        A.MotionBlur(blur_limit=(3, 5)),
+                        A.GaussianBlur(blur_limit=(3, 5)),
+                        A.Blur(blur_limit=(3, 7)),
+                    ],
+                    p=0.15,
+                ),
                 A.Defocus(radius=(1, 2), p=0.15),
-                A.GaussianBlur(blur_limit=(3, 5), p=0.1),
-                A.ImageCompression(quality_lower=5, quality_upper=100, p=0.2),
-                A.RandomFog(fog_coef_lower=0.05, fog_coef_upper=0.15, p=0.1),
+                A.ImageCompression(quality_lower=75, quality_upper=100, p=0.2),
                 A.RingingOvershoot(blur_limit=(7, 15), p=0.1),
                 A.Emboss(alpha=(0.2, 0.5), strength=(0.2, 0.7), always_apply=False, p=0.1),
                 A.RGBShift(
                     r_shift_limit=50, g_shift_limit=50, b_shift_limit=50, always_apply=False, p=0.2
                 ),
-                A.RandomBrightnessContrast(brightness_limit=0.2, contrast_limit=0.2, always_apply=False, p=0.1),
+                A.RandomBrightnessContrast(
+                    brightness_limit=0.2, contrast_limit=0.2, always_apply=False, p=0.1
+                ),
                 A.ElasticTransform(
                     alpha=1,
                     sigma=10,
@@ -50,8 +59,8 @@ class CusAug(object):
                 ),
                 A.CoarseDropout(
                     max_holes=8,
-                    max_height=100,
-                    max_width=20,
+                    max_height=8,
+                    max_width=12,
                     min_holes=None,
                     min_height=None,
                     min_width=None,
@@ -62,9 +71,7 @@ class CusAug(object):
                 ),
                 A.GridDistortion(
                     num_steps=5,
-                    distort_limit=0.5,
-                    interpolation=1,
-                    border_mode=4,
+                    distort_limit=0.3,
                     value=None,
                     mask_value=None,
                     normalized=False,
@@ -80,8 +87,9 @@ class CusAug(object):
 
         # tia
         if random.random() <= self.tia_prob:
-            img = tia_distort(img, random.randint(min(w // 3, 5), min(w // 3, 20)))
-            img = tia_stretch(img, random.randint(3, 6))
+            if h >= 20 and w >= 20:
+                img = tia_distort(img, random.randint(min(w // 3, 5), min(w // 3, 20)))
+                img = tia_stretch(img, random.randint(3, 6))
             img = tia_perspective(img)
 
         # albumentations
@@ -90,9 +98,9 @@ class CusAug(object):
             img = transformed["image"]
             data["image"] = img
         except Exception as e:
+            print(e)
             data["image"] = img
             data = self.bda(data)
-            pass
 
         return data
 
